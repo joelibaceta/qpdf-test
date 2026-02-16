@@ -7,7 +7,9 @@ It can be used for testing and development purposes.
 """
 
 import argparse
+import errno
 import http.server
+import os
 import socketserver
 import sys
 from pathlib import Path
@@ -40,6 +42,9 @@ def start_server(port=8000, directory=None):
     else:
         directory_path = Path.cwd()
     
+    # Change to the directory before starting the server
+    os.chdir(directory_path)
+    
     handler = SimpleHTTPRequestHandler
     
     try:
@@ -52,7 +57,7 @@ def start_server(port=8000, directory=None):
         print("\nServer stopped")
         sys.exit(0)
     except OSError as e:
-        if e.errno == 98:  # Address already in use
+        if e.errno == errno.EADDRINUSE:
             print(f"Error: Port {port} is already in use")
         else:
             print(f"Error: {e}")
